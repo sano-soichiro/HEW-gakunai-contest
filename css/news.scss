@@ -1,0 +1,73 @@
+/* 
+font-family: 'Averia Libre', cursive;
+font-family: 'Ballet', cursive;
+font-family: 'Barlow Condensed', sans-serif;
+font-family: 'Bebas Neue', cursive;
+font-family: 'Darker Grotesque', sans-serif;
+font-family: 'IM Fell English', serif;
+font-family: 'Josefin Sans', sans-serif;
+font-family: 'Niconne', cursive;
+font-family: 'Noto Sans JP', sans-serif;
+font-family: 'Noto Serif JP', serif;
+font-family: 'Oswald', sans-serif;
+font-family: 'Rajdhani', sans-serif;
+font-family: 'Raleway', sans-serif; 
+font-family: 'Montserrat', sans-serif; 
+*/
+
+@charset 'utf-8';
+
+*{
+    margin: 0;
+    padding: 0;
+}
+
+body{
+    width: 100%;
+    height: 100%;
+    background-color: rgb(97, 97, 97);
+}
+
+#head_div{
+    h1{
+        padding-top: 40px;
+    }
+    width: 50%;
+    height: 100%;
+    margin: 0 auto;
+    text-align: center;
+    border: rgb(104, 104, 236) solid 2px;
+    border-radius: 20px;
+    #change_button{
+        width: 100%;
+        input{
+            width: 500px;
+            height: 50px;
+        }
+    }
+    #in_div{
+        display: flex;
+        justify-content: center;
+        margin: 100px auto 100px auto;
+        border: rgb(104, 104, 236) solid 2px;
+        padding-top: 30px;
+        padding-bottom: 30px;
+        background-color: rgb(80, 80, 80);
+        p{
+            color: white;
+            font-family: 'Noto Serif JP', serif;
+            padding-right: 30px;
+        }
+    }
+}
+
+#a_tag{
+    width: 100%;
+    margin: 30px auto;
+    text-align: center;
+    a{
+        text-decoration: none;
+        font-size: 20px;
+        color: white;
+    }
+}

@@ -1,0 +1,36 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  width: 100%;
+}
+
+ul {
+  background: #25b5b6;
+  background: linear-gradient(180deg, #25b5b6 0%, #7ffaff 100%);
+  border-radius: 50px;
+  width: 50%;
+  margin: 100px auto 0 auto;
+  text-align: center;
+}
+
+ul li {
+  list-style: none;
+  padding-bottom: 100px;
+  padding-top: 80px;
+}
+
+ul li a {
+  color: white;
+  text-decoration: none;
+  font-size: 30px;
+}
+
+ul li a:hover {
+  color: blue;
+  transition: all 1s;
+  font-size: 35px;
+}
+/*# sourceMappingURL=kanri_home.css.map */

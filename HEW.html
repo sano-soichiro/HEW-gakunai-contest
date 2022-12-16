@@ -1,0 +1,270 @@
+<?php
+// タイムゾーンを設定
+date_default_timezone_set('Asia/Tokyo');
+
+// 前月・次月リンクが押された場合は、GETパラメーターから年月を取得
+if (isset($_GET['ym'])) {
+    $ym = $_GET['ym'];
+} else {
+    // 今月の年月を表示
+    $ym = date('Y-m');
+}
+
+// タイムスタンプを作成し、フォーマットをチェックする
+$timestamp = strtotime($ym . '-01');
+if ($timestamp === false) {
+    $ym = date('Y-m');
+    $timestamp = strtotime($ym . '-01');
+}
+
+// 今日の日付 フォーマット　例）2018-07-3
+$today = date('Y-m-j');
+
+// カレンダーのタイトルを作成　例）2017年7月
+$html_title = date('Y年n月', $timestamp);
+
+// 前月・次月の年月を取得
+// 方法１：mktimeを使う mktime(hour,minute,second,month,day,year)
+$prev = date('Y-m', mktime(0, 0, 0, date('m', $timestamp)-1, 1, date('Y', $timestamp)));
+$next = date('Y-m', mktime(0, 0, 0, date('m', $timestamp)+1, 1, date('Y', $timestamp)));
+
+// 方法２：strtotimeを使う
+// $prev = date('Y-m', strtotime('-1 month', $timestamp));
+// $next = date('Y-m', strtotime('+1 month', $timestamp));
+
+// 該当月の日数を取得
+$day_count = date('t', $timestamp);
+
+// １日が何曜日か　0:日 1:月 2:火 ... 6:土
+// 方法１：mktimeを使う
+$youbi = date('w', mktime(0, 0, 0, date('m', $timestamp), 1, date('Y', $timestamp)));
+// 方法２
+// $youbi = date('w', $timestamp);
+
+
+// カレンダー作成の準備
+$weeks = [];
+$week = '';
+
+// 第１週目：空のセルを追加
+// 例）１日が水曜日だった場合、日曜日から火曜日の３つ分の空セルを追加する
+$week .= str_repeat('<td></td>', $youbi);
+
+for ( $day = 1; $day <= $day_count; $day++, $youbi++) {
+
+    // 2017-07-3
+    $date = $ym . '-' . $day;
+
+    // 開店情報に応じて色を変える
+    $flg = 0;
+    $fp = fopen('./csv/calendar.csv','r');
+    for($i=0;$status = fgets($fp);$i++){
+        $status = str_replace(["\n","\r"],['',''],$status);
+        $status_list[] = explode(',',$status);
+        if($status_list[$i][0] == $html_title){
+            if($status_list[$i][$day] == 'open'){
+                $week .= '<td class="open">' . $day;
+                $flg = 1;
+            }elseif($status_list[$i][$day] == 'rest'){
+                $week .= '<td class="rest">' . $day;
+                $flg = 1;
+            }elseif($status_list[$i][$day] == 'am'){
+                $week .= '<td class="am">' . $day;
+                $flg = 1;
+            }else{
+                $week .= '<td>' . $day;
+                $flg = 1;
+            }
+            $week .= '</td>';
+        }
+    }
+    if($flg == 0){
+        $week .= '<td>' . $day . '</td>';
+    }
+    fclose($fp);
+
+    
+
+    // 週終わり、または、月終わりの場合
+    if ($youbi % 7 == 6 || $day == $day_count) {
+
+        if ($day == $day_count) {
+            // 月の最終日の場合、空セルを追加
+            // 例）最終日が木曜日の場合、金・土曜日の空セルを追加
+            $week .= str_repeat('<td></td>', 6 - ($youbi % 7));
+        }
+
+        // weeks配列にtrと$weekを追加する
+        $weeks[] = '<tr>' . $week . '</tr>';
+
+        // weekをリセット
+        $week = '';
+	}
+}
+?>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Noto+Sans+JP" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Yusei+Magic&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./css/HEW.css" type="text/css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="top_list">
+        <ul>
+            <li><a href="#header">top</a></li>
+            <li><a href="#main">menu</a></li>
+            <li><a href="#sub">price</a></li>
+            <li><a href="#infomation">infomation</a></li>
+        </ul>
+    </div>
+    <div id="header">
+        <div id="h_img">
+            <img src="./img/crepe.png">
+        </div>
+        <div id="logo">
+            <img src="./img/logoWhite.png" alt="">
+        </div>
+    </div>
+    <div id="main">
+        <div id="main_menu">
+            <div id="m_h1"><h1>MENU</h1></div>
+            <div id="menu_list">
+                <div class="item item1">
+                    <img src="./img/01.png" alt="">
+                    <div class="item_cont item_cont1"></div>
+                    <ul>
+                        <li>あまおう(いちご)</li>
+                        <li>880円</li>
+                    </ul>
+                    <div class="item_cont item_cont2"></div>
+                    <div class="item_cont item_cont3"></div>
+                    <div class="item_cont item_cont4"></div>
+                </div>
+                <div class="item item2">
+                    <img src="./img/02.png" alt="">
+                    <div class="item_cont item_cont1"></div>
+                    <ul>
+                        <li>チョコバナナ</li>
+                        <li>780円</li>
+                    </ul>
+                    <div class="item_cont item_cont2"></div>
+                    <div class="item_cont item_cont3"></div>
+                    <div class="item_cont item_cont4"></div>
+                </div>
+                <div class="item item3">
+                    <img src="./img/03.png" alt="">
+                    <div class="item_cont item_cont1"></div>
+                    <ul>
+                        <li>キャラメルナッツ</li>
+                        <li>780円</li>
+                    </ul>
+                    <div class="item_cont item_cont2"></div>
+                    <div class="item_cont item_cont3"></div>
+                    <div class="item_cont item_cont4"></div>
+                </div>
+                <div class="item item4">
+                    <img src="./img/04.png" alt="">
+                    <div class="item_cont item_cont1"></div>
+                    <ul>
+                        <li>ティラミス</li>
+                        <li>880円</li>
+                    </ul>
+                    <div class="item_cont item_cont2"></div>
+                    <div class="item_cont item_cont3"></div>
+                    <div class="item_cont item_cont4"></div>
+                </div>
+                <div class="item item5">
+                    <img src="./img/05.png" alt="">
+                    <div class="item_cont item_cont1"></div>
+                    <ul>
+                        <li>クリームブリュレ</li>
+                        <li>880円</li>
+                    </ul>
+                    <div class="item_cont item_cont2"></div>
+                    <div class="item_cont item_cont3"></div>
+                    <div class="item_cont item_cont4"></div>
+                </div>
+                <div class="item item6">
+                    <img src="./img/06.png" alt="">
+                    <div class="item_cont item_cont1"></div>
+                    <ul>
+                        <li>チーズ蜂蜜</li>
+                        <li>880円</li>
+                    </ul>
+                    <div class="item_cont item_cont2"></div>
+                    <div class="item_cont item_cont3"></div>
+                    <div class="item_cont item_cont4"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="sub">
+        <div id="sub_menu">
+            <ul>
+                <li class="s_item1">あまおう(いちご)<br><span class="maney maney1">880円</span></li>
+                <li class="s_item2">クリームブリュレ<br><span class="maney maney2">880円</span></li>
+                <li class="s_item3">チョコバナナ<br><span class="maney maney3">780円</span></li>
+                <li class="s_item4">チーズ蜂蜜<br><span class="maney maney4">880円</span></li>
+                <li class="s_item5">キャラメルナッツ<br><span class="maney maney5">780円</span></li>
+                <li class="s_item6">ソフトクリーム<br><span class="maney maney6">480円</span></li>
+                <li class="s_item7">ティラミス<br><span class="maney maney7">880円</span></li>
+                <li class="s_item8"><span class="left">カフェラテ等</span><span class="right">ドリンク数種類</span></li>
+            </ul>
+        </div>
+    </div>
+    <div id="infomation">
+        <div id="address_menu">
+            <div id="add_h2">
+                <h2>INFOMATION</h2>
+            </div>
+
+            <div id="address">
+                <ul>
+                    <li><span>店名</span>YORKYS Creperie</li>
+                    <li><span>住所</span>大阪市北区芝田1丁目1番3号<br>阪急三番街北館B2F UMEDA FOOD HALL</li>
+                    <li><span>TEL</span>06-6292-5622</li>
+                    <li><span>営業時間</span>10:00−23:00</li>
+                </ul>
+                <div id="google">
+                    <div id="google_map">
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d598.6011574863466!2d135.49801463937044!3d34.70570096750979!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6000e69193b5e1bb%3A0xf2b0ea153774995f!2sUMEDA%20FOOD%20HALL!5e0!3m2!1sja!2sjp!4v1613454936213!5m2!1sja!2sjp" width="450" height="400" frameborder="0" style="border:0;" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
+                    </div>
+                    <div id="google_map_shadow">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="calendar">
+    <div class="container">
+        <h3><a href="?ym=<?php echo $prev; ?>">&lt;</a> <?php echo $html_title; ?> <a href="?ym=<?php echo $next; ?>">&gt;</a></h3>
+        <table class="table table-bordered">
+            <tr>
+                <th>日</th>
+                <th>月</th>
+                <th>火</th>
+                <th>水</th>
+                <th>木</th>
+                <th>金</th>
+                <th>土</th>
+            </tr>
+            <?php
+                foreach ($weeks as $week) {
+                    echo $week;
+                }
+            ?>
+        </table>
+    </div>
+    </div>
+</body>
+</html>

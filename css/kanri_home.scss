@@ -1,0 +1,35 @@
+@charset 'utf-8';
+
+*{
+    margin: 0;
+    padding: 0;
+}
+
+body{
+    width: 100%;
+}
+
+ul{
+    background: rgb(37,181,182);
+    background: linear-gradient(180deg, rgba(37,181,182,1) 0%, rgba(127,250,255,1) 100%);
+    border-radius: 50px;
+    width: 50%;
+    margin: 100px auto 0 auto;
+    text-align: center;
+    li{
+        list-style: none;
+        padding-bottom: 100px;
+        padding-top: 80px;
+        a{
+            color: white;
+            text-decoration: none;
+            font-size: 30px;
+            &:hover{
+                color: blue;
+                transition: all 1s;
+                font-size: 35px;
+            }
+        }
+    }
+
+}
